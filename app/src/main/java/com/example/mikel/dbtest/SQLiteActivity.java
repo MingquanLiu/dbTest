@@ -27,8 +27,9 @@ public class SQLiteActivity extends Activity
 
         public void wrapUp(Place loc)
         {
-            db.addPlace(loc);
             Log.v("See",loc.toString());
+            db.addPlace(loc);
+            Log.v("See",db.getAllPlaces().toString());
         }
     }
     @Override
