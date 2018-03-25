@@ -27,9 +27,7 @@ public class SQLiteActivity extends Activity
 
         public void wrapUp(Place loc)
         {
-            Log.v("See",loc.toString());
             db.addPlace(loc);
-            Log.v("See",db.getAllPlaces().toString());
         }
     }
     @Override
@@ -102,7 +100,6 @@ public class SQLiteActivity extends Activity
                     place.getValueByField(KEY_STREET_ADDRESS) + " ,Type: " + place.getValueByField(KEY_PLACE_TYPE);
             // Writing Places to log
             Log.e("Places: ", log);
-            Log.e("Places",place.toString());
         }
     }
 }
