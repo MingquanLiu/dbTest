@@ -10,6 +10,8 @@ import com.example.mikel.dbtest.messageontap.database.Entities.GeocodeWrapper;
 import com.example.mikel.dbtest.messageontap.database.Entities.Person;
 import com.example.mikel.dbtest.messageontap.database.Entities.Place;
 import com.example.mikel.dbtest.messageontap.database.Relationships.EventPersonRelationship;
+import com.example.mikel.dbtest.messageontap.database.Relationships.PersonPlaceRelationship;
+import com.example.mikel.dbtest.messageontap.database.Relationships.PlaceEventRelationship;
 
 import java.util.List;
 
@@ -24,12 +26,24 @@ import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_NAME;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_PERSON_RELATIONSHIP_TYPE;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LAT;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LNG;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_PLACE_RELATIONSHIP_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_EVENT_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_PLACE_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_RID;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PHONE_NUMBER;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_EVENT_RELATIONSHIP_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PERSON_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PLACE_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_RID;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_START_TIME;
-
-
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STREET_ADDRESS;
 
 /**
  * Created by mikel on 2018/2/24.
@@ -62,7 +76,9 @@ public class SQLiteActivity extends Activity
         //ssetContentView(R.layout.activity_main);
         Log.e("In SQL Activity", "On create");
         DBHandler dbh = new DBHandler(this);
-//        InsertionWrapper iw = new InsertionWrapper(dbh);
+        InsertionWrapper iw = new InsertionWrapper(dbh);
+        Place loc = new Place(40.4505480,-79.8998760,"Previous Abode");
+        loc.wrap = iw;
         /**
          *Insertion into database.
          **/
@@ -79,6 +95,15 @@ public class SQLiteActivity extends Activity
         EventPersonRelationship epr2 = new EventPersonRelationship(9,(long)event3.getValueByField(KEY_EID),
                 (long)person2.getValueByField(KEY_PID),"Host");
 
+        PersonPlaceRelationship ppr1 = new PersonPlaceRelationship(10,(long)person1.getValueByField(KEY_PID),
+                1,"Home");
+        PersonPlaceRelationship ppr2 = new PersonPlaceRelationship(11,(long)person2.getValueByField(KEY_PID),
+                1,"Work");
+
+        PlaceEventRelationship per1 = new PlaceEventRelationship(12,1,
+                (long)event1.getValueByField(KEY_EID),"Happens");
+        PlaceEventRelationship per2 = new PlaceEventRelationship(13,1,
+                (long)event3.getValueByField(KEY_EID),"Happens");
         dbh.addEvent(event1);
         dbh.addEvent(event2);
         dbh.addEvent(event3);
@@ -86,22 +111,23 @@ public class SQLiteActivity extends Activity
         dbh.addPerson(person1);
         dbh.addPerson(person2);
 
+        dbh.addPlace(loc);
         dbh.addEPRelationship(epr1);
         dbh.addEPRelationship(epr2);
+        dbh.addPERelationship(per1);
+        dbh.addPERelationship(per2);
+        dbh.addPPRelationship(ppr1);
+        dbh.addPPRelationship(ppr2);
+        Log.e("Updating: ", "Updating  events 3");
+        dbh.updateEventNameByEId("Mike's Holiday",3);
 
-//        Place loc = new Place(40.4505480,-79.8998760,"Previous Abode");
-//        loc.wrap = iw;
-//        dbh.addPlace(loc);
-//        Log.e("Updating: ", "Updating  events 3");
-//        dbh.updateEventNameByEId("Mike's Holiday",3);
-//
-//        Log.e("Updating: ", "Updating  Fanglin's phone number");
-//        dbh.updatePersonPhoneNumberByPId("5555555555",2);
-//        Log.e("Updating: ", "Updating  Mingquan's email address");
-//        dbh.updatePersonEmailAddressByContactId("mliu2@wpi.edu",2222221);
+        Log.e("Updating: ", "Updating  Fanglin's phone number");
+        dbh.updatePersonPhoneNumberByPId("5555555555",2);
+        Log.e("Updating: ", "Updating  Mingquan's email address");
+        dbh.updatePersonEmailAddressByContactId("mliu2@wpi.edu",2222221);
 
-//        Log.e("Updating: ", "Updating  Preferred name of Place");
-//        dbh.updatePlaceName("148 Elm St",0);
+        Log.e("Updating: ", "Updating  Preferred name of Place");
+        dbh.updatePlaceName("148 Elm St",0);
 
         // Reading all events
         Log.e("Reading: ", "Reading all events..");
@@ -126,35 +152,46 @@ public class SQLiteActivity extends Activity
             Log.e("Person: ", log);
         }
 
-        Log.e("Reading: ", "Reading all Relationships..");
+        Log.e("Reading: ", "Reading all Places..");
+        List<Place> places = dbh.getAllPlaces();
 
-        List<EventPersonRelationship> eprList = dbh.getAllEPR();
-
-        for (EventPersonRelationship epr : eprList) {
-
-            String log = "Id: "+epr.getValueByField(KEY_EP_RID) + " ,Person ID: " + epr.getValueByField(KEY_EP_PERSON_ID) +
-
-                    " ,Event ID: " + epr.getValueByField(KEY_EP_EVENT_ID) + " ,Relationship Type: " +
-
-                    epr.getValueByField(KEY_EVENT_PERSON_RELATIONSHIP_TYPE);
-
+        for (Place place : places)
+        {
+            String log = "Id: "+place.getValueByField(KEY_PLID) + " ,Place Name: " + place.getValueByField(KEY_PLACE_NAME) +
+                    " ,Coordinate: " + place.getValueByField(KEY_LAT) + " ," + place.getValueByField(KEY_LNG) + " ,Street Address: " +
+                    place.getValueByField(KEY_STREET_ADDRESS) + " ,Type: " + place.getValueByField(KEY_PLACE_TYPE);
             // Writing Places to log
-
-            Log.e("Relationships: ", log);
-
+            Log.e("Places: ", log);
+            Log.e("Places",place.toString());
         }
-        // Reading all Places
-//        Log.e("Reading: ", "Reading all Places..");
-//        List<Place> places = dbh.getAllPlaces();
-//
-//        for (Place place : places)
-//        {
-//            String log = "Id: "+place.getValueByField(KEY_PLID) + " ,Place Name: " + place.getValueByField(KEY_PLACE_NAME) +
-//                    " ,Coordinate: " + place.getValueByField(KEY_LAT) + " ," + place.getValueByField(KEY_LNG) + " ,Street Address: " +
-//                    place.getValueByField(KEY_STREET_ADDRESS) + " ,Type: " + place.getValueByField(KEY_PLACE_TYPE);
-//            // Writing Places to log
-//            Log.e("Places: ", log);
-//            Log.e("Places",place.toString());
-//        }
+
+        Log.e("Reading: ", "Reading all Relationships..");
+        List<EventPersonRelationship> eprList = dbh.getAllEPR();
+        for (EventPersonRelationship epr : eprList) {
+            String log = "Id: "+epr.getValueByField(KEY_EP_RID) + " ,Person ID: " + epr.getValueByField(KEY_EP_PERSON_ID) +
+                    " ,Event ID: " + epr.getValueByField(KEY_EP_EVENT_ID) + " ,Relationship Type: " +
+                    epr.getValueByField(KEY_EVENT_PERSON_RELATIONSHIP_TYPE);
+            // Writing Places to log
+            Log.e("Relationships: ", log);
+        }
+
+        List<PersonPlaceRelationship> pprList = dbh.getAllPPR();
+        for (PersonPlaceRelationship ppr : pprList) {
+            String log = "Id: "+ppr.getValueByField(KEY_PP_RID) + " ,Person ID: " + ppr.getValueByField(KEY_PP_PERSON_ID) +
+                    " ,Place ID: " + ppr.getValueByField(KEY_PP_PLACE_ID) + " ,Relationship Type: " +
+                    ppr.getValueByField(KEY_PERSON_PLACE_RELATIONSHIP_TYPE);
+            // Writing Places to log
+            Log.e("Relationships: ", log);
+        }
+
+        List<PlaceEventRelationship> perList = dbh.getAllPER();
+        for (PlaceEventRelationship per : perList) {
+            String log = "Id: "+per.getValueByField(KEY_PE_RID) + " ,Place ID: " + per.getValueByField(KEY_PE_PLACE_ID) +
+                    " ,Event ID: " + per.getValueByField(KEY_PE_EVENT_ID) + " ,Relationship Type: " +
+                    per.getValueByField(KEY_PLACE_EVENT_RELATIONSHIP_TYPE);
+            // Writing Places to log
+            Log.e("Relationships: ", log);
+        }
+
     }
 }
