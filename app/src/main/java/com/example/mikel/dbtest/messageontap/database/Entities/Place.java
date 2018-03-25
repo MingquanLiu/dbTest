@@ -97,8 +97,6 @@ public class Place extends Entity
         protected void onPostExecute(Map<String,Object> rec)
         {
             getItemMap().putAll(rec);
-            Log.v("Reverse Geocoder",Place.this.toString());
-            Log.v("wrap",wrap.toString());
             if(wrap!=null)
                 wrap.wrapUp(Place.this);
             finished = true;
@@ -184,7 +182,8 @@ public class Place extends Entity
     public String toString()
     {
         if(containsField(KEY_STREET_ADDRESS))
-            Log.v("Reverse Geocode","Process Not Complete");
+            Log.v("GeocodingProcess","Process Not Complete");
         return String.format("%s",getValueByField(KEY_STREET_ADDRESS));
     }
 }
+

@@ -105,6 +105,7 @@ public class DBHandler extends SQLiteOpenHelper
                 TABLE_PLACES,KEY_LAT,KEY_LNG,KEY_PLACE_NAME,KEY_PLACE_TYPE,
                 KEY_STREET_NUM,KEY_ROUTE,KEY_NEIGHBORHOOD,KEY_LOCALITY,KEY_ADMINISTRATIVE2,KEY_ADMINISTRATIVE1,
                 KEY_COUNTRY,KEY_ZIP,KEY_STREET_ADDRESS,KEY_PLID);
+
         String CREATE_EVENT_PERSON_TABLE = "CREATE TABLE " + TABLE_EVENT_PERSON + "("
                 + KEY_EP_RID + " INTEGER PRIMARY KEY, " +  KEY_EP_EVENT_ID+ " INTEGER,"
                 //REFERENCES "+ PersonDBHandler.TABLE_PERSONS+"("+ KEY_PID + "), "
@@ -1198,4 +1199,3 @@ public class DBHandler extends SQLiteOpenHelper
     }
 
 }
-
