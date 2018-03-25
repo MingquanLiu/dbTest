@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.example.mikel.dbtest.messageontap.database.Entities.Event;
 import com.example.mikel.dbtest.messageontap.database.Entities.Person;
@@ -607,11 +606,9 @@ public class DBHandler extends SQLiteOpenHelper
     public long addPlace(Place loc)
     {
         Cursor cur = dupSearch((double)loc.getValueByField(KEY_LAT),(double)loc.getValueByField(KEY_LNG));
-        Log.e("See","Here then?");
         //If the Place already exists in the database.
         if(cur.moveToNext())
             return cur.getLong(13);
-        Log.e("See","here?");
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_LAT,(Double)loc.getValueByField(KEY_LAT));
@@ -628,8 +625,7 @@ public class DBHandler extends SQLiteOpenHelper
         values.put(KEY_ZIP,(String)loc.getValueByField(KEY_ZIP));
         values.put(KEY_STREET_ADDRESS,(String)loc.getValueByField(KEY_STREET_ADDRESS));
         loc.setFieldValue(KEY_PLID,db.insert(TABLE_PLACES,null,values));
-        Log.v("Executed?",loc.toString());
-        return loc.getValueByField(KEY_PID);
+        return loc.getValueByField(KEY_PLID);
     }
 
     /**
@@ -1208,3 +1204,4 @@ public class DBHandler extends SQLiteOpenHelper
     }
 
 }
+
