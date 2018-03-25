@@ -74,7 +74,7 @@ public class DBHandler extends SQLiteOpenHelper
 {
     // All Static variables
     // Database Version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     private static final String TAG = "DBHandler";
     // Database Name
     private static final String DATABASE_NAME = "PG";
@@ -101,11 +101,10 @@ public class DBHandler extends SQLiteOpenHelper
 
         String CREATE_PLACES_TABLE = String.format("create table %s ( %s real unsigned, %s real unsigned, %s text, " +
                 "%s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, " +
-                "%s text, primary key (%s, %s))",
+                "%s INTEGER PRIMARY KEY autoincrement)",
                 TABLE_PLACES,KEY_LAT,KEY_LNG,KEY_PLACE_NAME,KEY_PLACE_TYPE,
                 KEY_STREET_NUM,KEY_ROUTE,KEY_NEIGHBORHOOD,KEY_LOCALITY,KEY_ADMINISTRATIVE2,KEY_ADMINISTRATIVE1,
-                KEY_COUNTRY,KEY_ZIP,KEY_STREET_ADDRESS,KEY_PLID,KEY_LAT,KEY_LNG);
-        Log.e("DBHandlerTest", CREATE_PLACES_TABLE);
+                KEY_COUNTRY,KEY_ZIP,KEY_STREET_ADDRESS,KEY_PLID);
         String CREATE_EVENT_PERSON_TABLE = "CREATE TABLE " + TABLE_EVENT_PERSON + "("
                 + KEY_EP_RID + " INTEGER PRIMARY KEY, " +  KEY_EP_EVENT_ID+ " INTEGER,"
                 //REFERENCES "+ PersonDBHandler.TABLE_PERSONS+"("+ KEY_PID + "), "
@@ -134,12 +133,12 @@ public class DBHandler extends SQLiteOpenHelper
                 + "FOREIGN KEY ("+ KEY_PE_EVENT_ID + ") REFERENCES "+ TABLE_EVENTS
                 +"("+KEY_EID + ")"
                 + ");";
-//        db.execSQL(CREATE_PLACES_TABLE);
+        db.execSQL(CREATE_PLACES_TABLE);
         db.execSQL(CREATE_PERSONS_TABLE);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_EVENT_PERSON_TABLE);
-//        db.execSQL(CREATE_PERSON_PLACE_TABLE);
-//        db.execSQL(CREATE_PLACE_EVENT_TABLE);
+        db.execSQL(CREATE_PERSON_PLACE_TABLE);
+        db.execSQL(CREATE_PLACE_EVENT_TABLE);
     }
 
     @Override
@@ -279,11 +278,6 @@ public class DBHandler extends SQLiteOpenHelper
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
-                if(cursor.getString(1)==null){
-                    Log.e("Test","There is null");
-                }else{
-                    Log.e("Test",cursor.getString(1));
-                }
                 Person person = new Person(Long.parseLong(cursor.getString(0)),Long.parseLong(cursor.getString(1)),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6));
                 // Adding person to list
                 personList.add(person);
