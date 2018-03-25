@@ -1,8 +1,17 @@
 package com.example.mikel.dbtest.messageontap.database.Entities;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.*;
-import java.util.Map;
 
 import com.example.mikel.dbtest.messageontap.data.Entity;
+
+import java.util.Map;
+
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_CONTACT_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EMAIL_ADDRESS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_FACEBOOK_USER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PHONE_NUMBER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_WHATSAPP_USER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.PERSON_KEYS;
 
 /**
  * Class for SQL DB compensate the work of Personal Graph
@@ -17,7 +26,7 @@ public class Person extends Entity
         super();
         Map<String,Object> record = getItemMap();
         record.put(KEY_PID,pid);
-        record.put(KEY_CALENDAR_ID,contactId);
+        record.put(KEY_CONTACT_ID,contactId);
         record.put(KEY_PERSON_NAME,personName);
         record.put(KEY_PHONE_NUMBER,phoneNumber);
         record.put(KEY_EMAIL_ADDRESS,emailAddress);

@@ -7,16 +7,64 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.mikel.dbtest.messageontap.database.Entities.Event;
+import com.example.mikel.dbtest.messageontap.database.Entities.Person;
+import com.example.mikel.dbtest.messageontap.database.Entities.Place;
+import com.example.mikel.dbtest.messageontap.database.Relationships.EventPersonRelationship;
+import com.example.mikel.dbtest.messageontap.database.Relationships.PersonPlaceRelationship;
+import com.example.mikel.dbtest.messageontap.database.Relationships.PlaceEventRelationship;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.*;
-import com.example.mikel.dbtest.messageontap.database.Relationships.*;
-import com.example.mikel.dbtest.messageontap.database.Entities.*;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_ADMINISTRATIVE1;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_ADMINISTRATIVE2;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_CALENDAR_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_CONTACT_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_COUNTRY;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EMAIL_ADDRESS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_END_TIME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_EVENT_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_PERSON_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_RID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_PERSON_RELATIONSHIP_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_FACEBOOK_USER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LAT;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LNG;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LOCALITY;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_NEIGHBORHOOD;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_PLACE_RELATIONSHIP_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_EVENT_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_PLACE_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_RID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PHONE_NUMBER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_EVENT_RELATIONSHIP_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_NAME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_TYPE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PERSON_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PLACE_ID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_RID;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_ROUTE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_START_TIME;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STREET_ADDRESS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STREET_NUM;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_WHATSAPP_USER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_ZIP;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_EVENTS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_EVENT_PERSON;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PERSONS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PERSON_PLACE;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PLACES;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PLACE_EVENT;
 
 /**
  * This is the DB for person and event and person event relationship
@@ -51,13 +99,14 @@ public class DBHandler extends SQLiteOpenHelper
                 + KEY_EVENT_NAME + " TEXT,"+ KEY_EVENT_TYPE + " TEXT,"
                 + KEY_START_TIME + " INTEGER,"+ KEY_END_TIME + " INTEGER"
                 + ")";
+
         String CREATE_PLACES_TABLE = String.format("create table %s ( %s real unsigned, %s real unsigned, %s text, " +
                 "%s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, %s text, " +
                 "%s text, primary key (%s, %s))",
                 TABLE_PLACES,KEY_LAT,KEY_LNG,KEY_PLACE_NAME,KEY_PLACE_TYPE,
                 KEY_STREET_NUM,KEY_ROUTE,KEY_NEIGHBORHOOD,KEY_LOCALITY,KEY_ADMINISTRATIVE2,KEY_ADMINISTRATIVE1,
                 KEY_COUNTRY,KEY_ZIP,KEY_STREET_ADDRESS,KEY_PLID,KEY_LAT,KEY_LNG);
-
+        Log.e("DBHandlerTest", CREATE_PLACES_TABLE);
         String CREATE_EVENT_PERSON_TABLE = "CREATE TABLE " + TABLE_EVENT_PERSON + "("
                 + KEY_EP_RID + " INTEGER PRIMARY KEY, " +  KEY_EP_EVENT_ID+ " INTEGER,"
                 //REFERENCES "+ PersonDBHandler.TABLE_PERSONS+"("+ KEY_PID + "), "
@@ -86,12 +135,12 @@ public class DBHandler extends SQLiteOpenHelper
                 + "FOREIGN KEY ("+ KEY_PE_EVENT_ID + ") REFERENCES "+ TABLE_EVENTS
                 +"("+KEY_EID + ")"
                 + ");";
-        db.execSQL(CREATE_PLACES_TABLE);
+//        db.execSQL(CREATE_PLACES_TABLE);
         db.execSQL(CREATE_PERSONS_TABLE);
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(CREATE_EVENT_PERSON_TABLE);
-        db.execSQL(CREATE_PERSON_PLACE_TABLE);
-        db.execSQL(CREATE_PLACE_EVENT_TABLE);
+//        db.execSQL(CREATE_PERSON_PLACE_TABLE);
+//        db.execSQL(CREATE_PLACE_EVENT_TABLE);
     }
 
     @Override
@@ -231,6 +280,11 @@ public class DBHandler extends SQLiteOpenHelper
         // looping through all rows and adding to list
         if (cursor.moveToFirst()) {
             do {
+                if(cursor.getString(1)==null){
+                    Log.e("Test","There is null");
+                }else{
+                    Log.e("Test",cursor.getString(1));
+                }
                 Person person = new Person(Long.parseLong(cursor.getString(0)),Long.parseLong(cursor.getString(1)),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6));
                 // Adding person to list
                 personList.add(person);

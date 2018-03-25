@@ -21,8 +21,8 @@ public class DBConstants
     public static final String KEY_PERSON_NAME = "person_name";
     public static final String KEY_PHONE_NUMBER = "phone_number";
     public static final String KEY_EMAIL_ADDRESS = "email_address";
-    public static final String KEY_WHATSAPP_USER = "whatsapp username";
-    public static final String KEY_FACEBOOK_USER = "facebook username";
+    public static final String KEY_WHATSAPP_USER = "whatsapp_username";
+    public static final String KEY_FACEBOOK_USER = "facebook_username";
     /**
      * All the column names of the persons table.
      */
