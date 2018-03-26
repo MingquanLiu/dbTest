@@ -8,6 +8,14 @@ import java.util.Collections;
  */
 public class DBConstants
 {
+
+    public static final String PACKAGE_NAME_FACEBOOK_MESSENGER = "com.facebook.orca";
+    public static final String PACKAGE_NAME_WHATSAPP = "com.whatsapp";
+    public static final String DB_PERSON = "db_person";
+    public static final String DB_PLACE = "db_place";
+    public static final String DB_EVENT = "db_event";
+
+
     /**
      * Table name for Person objects.
      */
