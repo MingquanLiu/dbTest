@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.example.mikel.dbtest.messageontap.database.Entities.Event;
 import com.example.mikel.dbtest.messageontap.database.Entities.Person;
@@ -58,12 +59,16 @@ import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STR
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STREET_NUM;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_WHATSAPP_USER;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_ZIP;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.PACKAGE_NAME_FACEBOOK_MESSENGER;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.PACKAGE_NAME_WHATSAPP;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_EVENTS;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_EVENT_PERSON;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PERSONS;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PERSON_PLACE;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PLACES;
 import static com.example.mikel.dbtest.messageontap.database.DBConstants.TABLE_PLACE_EVENT;
+
+;
 
 /**
  * This is the DB for person and event and person event relationship
@@ -229,9 +234,12 @@ public class DBHandler extends SQLiteOpenHelper
         String where = String.format("%s = ?",KEY_PHONE_NUMBER);
         String[] vals = {dial};
         Cursor cur = db.query(TABLE_PERSONS,null,where,vals,null,null,null);
+        Person mPerson = null;
        if(cur.moveToNext())
-           return new Person(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getString(4),cur.getString(5),cur.getString(6));
-       return null;
+           mPerson = new Person(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getString(4),cur.getString(5),cur.getString(6));
+        cur.close();
+        db.close();
+       return mPerson;
     }
 
     /**
@@ -244,10 +252,13 @@ public class DBHandler extends SQLiteOpenHelper
         SQLiteDatabase db = getReadableDatabase();
         String where = String.format("%s = ?",KEY_WHATSAPP_USER);
         String[] vals = {user};
+        Person mPerson = null;
         Cursor cur = db.query(TABLE_PERSONS,null,where,vals,null,null,null);
         if(cur.moveToNext())
-            return new Person(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getString(4),cur.getString(5),cur.getString(6));
-        return null;
+            mPerson =new Person(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getString(4),cur.getString(5),cur.getString(6));
+        cur.close();
+        db.close();
+        return mPerson;
     }
 
     /**
@@ -260,12 +271,48 @@ public class DBHandler extends SQLiteOpenHelper
         SQLiteDatabase db = getReadableDatabase();
         String where = String.format("%s = ?", KEY_FACEBOOK_USER);
         String[] vals = {user};
+        Person mPerson = null;
         Cursor cur = db.query(TABLE_PERSONS, null, where, vals, null, null, null);
         if (cur.moveToNext())
-            return new Person(cur.getLong(0), cur.getLong(1), cur.getString(2), cur.getString(3), cur.getString(4), cur.getString(5), cur.getString(6));
-        return null;
+            mPerson = new Person(cur.getLong(0), cur.getLong(1), cur.getString(2), cur.getString(3), cur.getString(4), cur.getString(5), cur.getString(6));
+        cur.close();
+        db.close();
+        return mPerson;
     }
 
+    public List<Person> getPersonByContactName(String packageName, String contactName){
+        List<Person> resultList = new ArrayList<Person>();
+        SQLiteDatabase db = getReadableDatabase();
+        String mString = "";
+        switch (packageName){
+            case PACKAGE_NAME_FACEBOOK_MESSENGER:
+                mString = KEY_FACEBOOK_USER;
+                break;
+            case PACKAGE_NAME_WHATSAPP:
+                mString = KEY_WHATSAPP_USER;
+                break;
+        }
+        String where = String.format("%s = ?", mString);
+
+        String[] vals = {contactName};
+        Cursor cur = db.query(TABLE_PERSONS, null, where, vals, null, null, null);
+        if (cur.moveToNext())
+            resultList.add(new Person(cur.getLong(0), cur.getLong(1), cur.getString(2),
+                    cur.getString(3), cur.getString(4), cur.getString(5), cur.getString(6)));
+
+        if(resultList.isEmpty()){
+            Log.e(TAG,"No exact Match");
+            where = String.format("%s LIKE ? ", mString);
+            vals = new String[]{"%"+contactName+"%"};
+            cur = db.query(TABLE_PERSONS, null, where, vals, null, null, null);
+            if (cur.moveToNext())
+                resultList.add(new Person(cur.getLong(0), cur.getLong(1), cur.getString(2),
+                        cur.getString(3), cur.getString(4), cur.getString(5), cur.getString(6)));
+        }
+        cur.close();
+        db.close();
+        return resultList;
+    }
     // Getting All Persons
     public List<Person> getAllPersons()
     {
@@ -369,6 +416,8 @@ public class DBHandler extends SQLiteOpenHelper
                 new String[] { String.valueOf(pid) });
     }
 
+
+
     //-*******************************Events*****************************************
     // Add Event
     public void addEvent(Event event){
@@ -428,13 +477,16 @@ public class DBHandler extends SQLiteOpenHelper
      */
     public List<Event> getEventsByTime(long start, long end)
     {
+        //TODO NEED ADD LOCATION IN
         SQLiteDatabase db = getReadableDatabase();
-        String where = String.format("%s > ? and %s < ?");
+        String where = String.format("%s >= ? and %s <= ?", KEY_START_TIME, KEY_END_TIME);
         String[] vals = {String.valueOf(start),String.valueOf(end)};
         Cursor cur = db.query(TABLE_EVENTS,null,where,vals,null,null,null);
         List<Event> eves = new LinkedList<>();
         while(cur.moveToNext())
             eves.add(new Event(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getLong(4),cur.getLong(5)));
+        cur.close();
+        db.close();
         return eves;
     }
 
@@ -446,12 +498,14 @@ public class DBHandler extends SQLiteOpenHelper
     public List<Event> getEventsByName(String name)
     {
         SQLiteDatabase db = getReadableDatabase();
-        String where = String.format("%s = ?");
+        String where = String.format("%s = ?", KEY_EVENT_NAME);
         String[] vals = {name};
         Cursor cur = db.query(TABLE_EVENTS,null,where,vals,null,null,null);
         List<Event> eves = new LinkedList<>();
         while(cur.moveToNext())
             eves.add(new Event(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getLong(4),cur.getLong(5)));
+        cur.close();
+        db.close();
         return eves;
     }
 
@@ -463,12 +517,14 @@ public class DBHandler extends SQLiteOpenHelper
     public List<Event> getEventsByType(String type)
     {
         SQLiteDatabase db = getReadableDatabase();
-        String where = String.format("%s = ?");
+        String where = String.format("%s = ?", KEY_EVENT_TYPE);
         String[] vals = {type};
         Cursor cur = db.query(TABLE_EVENTS,null,where,vals,null,null,null);
         List<Event> eves = new LinkedList<>();
         while(cur.moveToNext())
             eves.add(new Event(cur.getLong(0),cur.getLong(1),cur.getString(2),cur.getString(3),cur.getLong(4),cur.getLong(5)));
+        cur.close();
+        db.close();
         return eves;
     }
 
@@ -698,6 +754,8 @@ public class DBHandler extends SQLiteOpenHelper
             que[13] = cur.getLong(13);
             plcs.add(processPlace(que));
         }
+        cur.close();
+        db.close();
         return plcs;
     }
 
