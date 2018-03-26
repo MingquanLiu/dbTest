@@ -15,35 +15,7 @@ import com.example.mikel.dbtest.messageontap.database.Relationships.PlaceEventRe
 
 import java.util.List;
 
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_CALENDAR_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_CONTACT_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EMAIL_ADDRESS;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_END_TIME;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_EVENT_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_PERSON_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EP_RID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_NAME;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_PERSON_RELATIONSHIP_TYPE;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_EVENT_TYPE;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LAT;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_LNG;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_NAME;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PERSON_PLACE_RELATIONSHIP_TYPE;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_EVENT_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_PLACE_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PE_RID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PHONE_NUMBER;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_EVENT_RELATIONSHIP_TYPE;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_NAME;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLACE_TYPE;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PLID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PERSON_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_PLACE_ID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_PP_RID;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_START_TIME;
-import static com.example.mikel.dbtest.messageontap.database.DBConstants.KEY_STREET_ADDRESS;
+import static com.example.mikel.dbtest.messageontap.database.DBConstants.*;
 
 /**
  * Created by mikel on 2018/2/24.
@@ -85,7 +57,7 @@ public class SQLiteActivity extends Activity
         Event event2 = new Event(2,77777772, "Adam's Moving Day","A",1112111111,1112111117);
         Event event3 = new Event(3,77777773, "Mars's Meeting","M",1112151111,1112151117);
         Person person1 = new Person(1,2222221,"Mingquan Liu",
-                "8572049278","mikelmq99@gmail.com","minquan@whatsapp","mingquan@facebook");
+                "8572049278","mikelmq99@gmail.com","mingquan@whatsapp","mingquan@facebook");
         Person person2 = new Person(2,2222222,"Fanglin Chen",
                 "7777777777","chentc@gmail.com","fanglin@whatsapp","fanglin@facebook");
         EventPersonRelationship epr1 = new EventPersonRelationship(8,(long)event1.getValueByField(KEY_EID),
@@ -116,6 +88,27 @@ public class SQLiteActivity extends Activity
         dbh.addPERelationship(per2);
         dbh.addPPRelationship(ppr1);
         dbh.addPPRelationship(ppr2);
+        Log.e("Reading: ", "Reading events by time");
+        List<Event> eventResult = dbh.getEventsByTime((long)event1.getValueByField(KEY_START_TIME)-1,
+                (long)event1.getValueByField(KEY_END_TIME)+1);
+        for (Event event : eventResult) {
+            String log = "Id: "+event.getValueByField(KEY_EID) + " ,Calendar ID: " + event.getValueByField(KEY_CALENDAR_ID) +
+                    " ,Name: " + event.getValueByField(KEY_EVENT_NAME) + " ,Type: " + event.getValueByField(KEY_EVENT_TYPE)
+                    + " ,Start Time: " + event.getValueByField(KEY_START_TIME) + " ,End Time: " + event.getValueByField(KEY_END_TIME);
+            // Writing Events to log
+            Log.e("Event: ", log);
+        }
+
+
+        Log.e("Reading: ", "Reading persons by contactName");
+        List<Person> personResult = dbh.getPersonByContactName(PACKAGE_NAME_WHATSAPP,"mingquan");
+        for (Person person : personResult) {
+            String log = "Id: "+person.getValueByField(KEY_PID) + " ,Contact ID: " + person.getValueByField(KEY_CONTACT_ID) +
+                    " ,Name: " + person.getValueByField(KEY_PERSON_NAME) + " ,Phone Number: " + person.getValueByField(KEY_PHONE_NUMBER)
+                    + " ,Email Address: " + person.getValueByField(KEY_EMAIL_ADDRESS);
+            // Writing Persons to log
+            Log.e("Person: ", log);
+        }
         Log.e("Updating: ", "Updating  events 3");
         dbh.updateEventNameByEId("Mike's Holiday",3);
 
